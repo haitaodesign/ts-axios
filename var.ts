@@ -56,13 +56,13 @@ function sumMatrix (matrix) {
 
 // 使用立即执行函数捕获每次迭代时 i 的值
 
-for (var i = 0; i < 20; i++) {
-  (function (i) {
-    setTimeout(function () {
-      console.log(i)
-    }, 100 * i);
-  })(i)
-}
+// for (var i = 0; i < 20; i++) {
+//   (function (i) {
+//     setTimeout(function () {
+//       console.log(i)
+//     }, 100 * i);
+//   })(i)
+// }
 
 // let 声明
 
@@ -103,3 +103,76 @@ function foo () {
 foo()
 
 let a
+
+// 重新定义屏蔽
+
+function f5 () {
+  var x
+  var x
+  if (true) {
+    var x
+  }
+}
+
+let x = 20
+// let x = 20 // ERROR，不能在同一个作用域重复声明 x
+
+function f6 (x) {
+  // let x = 100 // ERROR: 干扰参数声明
+}
+
+function g1 () {
+  let x = 20
+  // var x = 20 // ERROR，不能在同一个作用域重复声明 x
+}
+
+function f7 (condition, x) {
+  if (condition) {
+    let x = 100
+    return x
+  }
+  return x
+}
+
+f7(false, 0)  // 0
+f7(true, 100) // 100
+
+function sumMatrix2 (matrix) {
+  let sum = 0
+  for (let i =0; i < matrix.length; i++) {
+    let currentRow = matrix[i]
+    for (let i = 0;  i < currentRow.length; i++) {
+      sum += currentRow[i]
+      console.log('sum', sum)
+    }    
+  }
+  return sum
+}
+sumMatrix2([[1,2,3],[3,4,5]])
+
+// 块级作用域变量的获取
+
+for (let i = 0; i < 10; i++) {
+  setTimeout(() => {
+    console.log(i)
+  }, 100 * i)  
+}
+
+// const 声明
+
+// let vs const
+
+// 解构
+
+// 解构数组
+
+// 对象解构
+
+// 属性重命名
+
+// 默认值
+
+// 函数声明
+
+// 展开运算符
+
