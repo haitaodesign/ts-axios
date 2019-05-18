@@ -98,3 +98,99 @@ let employeeName = buildName4('vue', 'js', 'css', 'html')
 // 省略号用在带有剩余参数的函数类型定义上
 
 let buildNameFun: (firstName: string, ...rest: string[]) => string = buildName4
+
+// this
+
+let deck = {
+  suits: ['hearts', 'spades', 'clubs', 'diamonds'],
+  cards: Array(52),
+  createCardPicker: function () {
+    // 这里改写为箭头函数，可以解决 this 导致指向当前对象上下文
+    return () => {
+    // // 这里不实用箭头函数，在运行时会报错，this.suits[pickedSuit]
+    // return function () {
+      let pickedCard = Math.floor(Math.random() * 52)
+      let pickedSuit = Math.floor(pickedCard / 13)
+
+      return {
+        suit: this.suits[pickedSuit], card: pickedCard % 13
+      }
+    }
+  }
+}
+
+let cardPicker = deck.createCardPicker()
+
+let pickedCard = cardPicker()
+
+console.log('card: ' + pickedCard.card + ' of' + pickedCard.suit)
+
+// this 参数
+
+function func (this: void) {
+  // 确保 this 在此独立函数中不可用
+}
+
+interface Card {
+  suit: string,
+  card: number
+}
+
+interface Deck {
+  suits: string[]
+  cards: number[]
+
+  createCardPicker (this: Deck): () => Card
+}
+
+let deck2: Deck = {
+  suits: ['hearts', 'spades', 'clubs', 'diamonds'],
+  cards: Array(52),
+  createCardPicker: function () {
+    // NOTE: 函数现在显示指定其被调用方必须是 deck 类型
+    return function (this: Deck) {
+      let pickedCard = Math.floor(Math.random() * 52)
+      let pickedSuit = Math.floor(pickedCard / 13)
+
+      return {
+        suit: this.suits[pickedSuit], card: pickedCard % 13
+      }
+    }
+  }
+}
+
+let cardPicker2 = deck.createCardPicker()
+
+let pickedCard2 = cardPicker()
+
+console.log('card2: ' + pickedCard2.card + ' of' + pickedCard2.suit)
+
+// this 参数在回调函数里
+
+interface UIElement {
+  addClickListener(onclick: (this: void, e: Event) => void): void
+}
+
+class Handler {
+  type: string
+
+  // onClickBad (this: Handler, e: Event) {
+  onClickBad (this: void, e: Event) {
+    console.log('clicked!')
+    // this.type = e.type
+  }
+  onClickGood (e: Event) {
+    this.type = e.type
+  }
+}
+
+let h = new Handler()
+
+let uiElement: UIElement = {
+  addClickListener () {
+  }
+}
+
+uiElement.addClickListener(h.onClickBad)
+
+uiElement.addClickListener(h.onClickGood)
