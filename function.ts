@@ -56,3 +56,33 @@ function (x, y) {
   return x + y
 }
 
+// 可选参数和默认参数
+
+function buildName (firstName: string, lastName: string) {
+  return firstName + ' ' + lastName
+}
+
+// let result1 = buildName('Bob') // Error: 应有 2 个参数，但获得 1 个。
+// let result2 = buildName('bob', 'smiith', 'lee') // error: 应有 2 个参数，但获得 3 个。
+let result3 = buildName('Bob', 'haitao') // right
+
+// 可选参数
+function buildName2 (firstName: string, lastName?: string) {
+  if (lastName) {
+    return firstName + ' ' + lastName
+  } else {
+    return firstName
+  }
+}
+
+// let result4 = buildName2('Bob') // ok, 参数正常
+// let result5 = buildName('bob', 'smiith', 'lee') //error
+let result6 = buildName('Bob', 'haitao') // right
+
+// 默认参数
+
+function buildName3 (firstName: string, lastName = 'haitao') {
+  return firstName + ' ' + lastName
+}
+
+let resut7 = buildName3('Bob', undefined) // ok, return 'Bob haitao'
