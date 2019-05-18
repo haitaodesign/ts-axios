@@ -44,3 +44,15 @@ let myAddComplete2: (baseValue: number, increment: number) => number =
 function (x: number, y: number): number {
   return x + y
 }
+
+// 推断类型
+let myAddType2 = function (x: number, y: number): number {
+  return x + y
+}
+
+// 上下文归类
+let myAddType3: (baseValue: number, increment: number) => number = 
+function (x, y) {
+  return x + y
+}
+
