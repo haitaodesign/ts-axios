@@ -86,3 +86,15 @@ function buildName3 (firstName: string, lastName = 'haitao') {
 }
 
 let resut7 = buildName3('Bob', undefined) // ok, return 'Bob haitao'
+
+// 剩余参数
+// 剩余参数被当作个数不限的可选参数
+function buildName4 (firstName: string, ...restOfName: string []) {
+  return firstName + ' ' + restOfName.join(' ')
+}
+
+let employeeName = buildName4('vue', 'js', 'css', 'html')
+
+// 省略号用在带有剩余参数的函数类型定义上
+
+let buildNameFun: (firstName: string, ...rest: string[]) => string = buildName4
