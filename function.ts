@@ -194,3 +194,33 @@ let uiElement: UIElement = {
 uiElement.addClickListener(h.onClickBad)
 
 uiElement.addClickListener(h.onClickGood)
+
+// 重载
+
+let suits = ['hearts', 'spades', 'clubs', 'diamonds']
+
+// 为同一个函数提供多个函数类型定义来进行函数重载
+
+function pickCard (x: { suit: string; card: number }[]): number
+function pickCard (x: number): {suit: string; card: number}
+
+function pickCard (x): any {
+  if (Array.isArray(x)) {
+    let pickedCard = Math.floor(Math.random() * x.length)
+    return pickedCard
+  } else if (typeof x === 'number') {
+    let pickedSuit = Math.floor(x / 13)
+    return { suit: suits[pickedSuit], card: x % 13 }
+  }
+}
+
+let myDeck = [
+  { suit: 'diamonds', card: 2 },
+  { suit: 'spades', card: 10 },
+  { suit: 'hearts', card: 4 }
+]
+
+let pickedCard3 = myDeck[pickCard(myDeck)]
+console.log('card3: ' + pickedCard3.card + ' of ' + pickedCard3.suit)
+let pickedCard4 = pickCard(15)
+console.log('card4: ' + pickedCard4.card + ' of ' + pickedCard4.suit)
