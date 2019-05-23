@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-05-23 22:55:03
+ * @Last Modified time: 2019-05-23 23:04:30
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -29,6 +29,16 @@ app.use(express.static(__dirname))
 app.use(bodyParser.json())
 
 app.use(bodyParser.urlencoded({ extended: true}))
+
+const router = express.Router()
+
+router.get('/simple/get', function(req, res) {
+  res.json({
+    msg: `hello world`
+  })
+})
+
+app.use(router)
 
 const port = process.env.PORT || 8080
 module.exports = app.listen(port, () => {
