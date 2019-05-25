@@ -1,7 +1,7 @@
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const { data = null, url, method = 'get', headers, responseType } = config
 
     const request = new XMLHttpRequest()
@@ -30,6 +30,9 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       }
       resolve(response)
     }
+    request.onerror = function handleError() {
+      reject(new Error('Network Error!'))
+    }
 
     Object.keys(headers).forEach(name => {
       if (data === null && name.toLowerCase() === 'content-type') {
@@ -38,6 +41,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         request.setRequestHeader(name, headers[name])
       }
     })
+
     request.send(data)
   })
 }
