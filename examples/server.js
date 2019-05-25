@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-05-25 09:51:58
+ * @Last Modified time: 2019-05-25 10:19:36
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -40,6 +40,23 @@ router.get('/simple/get', function(req, res) {
 
 router.get('/base/get', function(req, res) {
   res.json(req.query)
+})
+
+router.post('/base/post', function (req, res) {
+  res.json(req.body)
+})
+
+router.post('/base/buffer', function (req, res) {
+  let msg = []
+  req.on('data', (chunk) => {
+    if (chunk) {
+      msg.push(chunk)
+    }
+  })
+  req.on('end', () => {
+    let buf = Buffer.concat(msg)
+    res.json(buf.toJSON())
+  })
 })
 
 app.use(router)
