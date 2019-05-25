@@ -17,6 +17,10 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         return
       }
 
+      if (request.status === 1) {
+        return
+      }
+
       const responseHeaders = request.getAllResponseHeaders()
       const responseData =
         responseType && responseType !== 'text' ? request.response : request.responseText
@@ -28,8 +32,17 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         config,
         request
       }
-      resolve(response)
+      handleResponse(response)
     }
+
+    function handleResponse(response: AxiosResponse) {
+      if (response.status >= 200 && response.status < 300) {
+        resolve(response)
+      } else {
+        reject(new Error(`Request failed with status code ${response.status}`))
+      }
+    }
+
     request.onerror = function handleError() {
       reject(new Error('Network Error!'))
     }
