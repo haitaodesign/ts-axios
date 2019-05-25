@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-05-23 23:04:30
+ * @Last Modified time: 2019-05-25 09:51:58
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -36,6 +36,10 @@ router.get('/simple/get', function(req, res) {
   res.json({
     msg: `hello world`
   })
+})
+
+router.get('/base/get', function(req, res) {
+  res.json(req.query)
 })
 
 app.use(router)
