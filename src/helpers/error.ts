@@ -2,7 +2,7 @@ import { AxiosRequestConfig, AxiosResponse } from '../types'
 
 export class AxiosError extends Error {
   config: AxiosRequestConfig
-  code?: string
+  code?: string | null
   request?: any
   response?: AxiosResponse
   isAxiosError: boolean
@@ -10,7 +10,7 @@ export class AxiosError extends Error {
   constructor(
     message: string,
     config: AxiosRequestConfig,
-    code?: string,
+    code?: string | null,
     request?: any,
     response?: AxiosResponse
   ) {
@@ -23,7 +23,7 @@ export class AxiosError extends Error {
     this.isAxiosError = true
 
     // 解决 ts 继承原生对象的一些坑
-    //https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+    // https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
     Object.setPrototypeOf(this, AxiosError.prototype)
   }
 }
@@ -31,11 +31,10 @@ export class AxiosError extends Error {
 export function createError(
   message: string,
   config: AxiosRequestConfig,
-  code?: string,
+  code?: string | null,
   request?: any,
   response?: AxiosResponse
 ): AxiosError {
   const error = new AxiosError(message, config, code, request, response)
-
   return error
 }
