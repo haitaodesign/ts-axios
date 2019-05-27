@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-05-25 10:19:36
+ * @Last Modified time: 2019-05-27 08:28:02
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -59,9 +59,56 @@ router.post('/base/buffer', function (req, res) {
   })
 })
 
+registerExtendRouter()
+
 app.use(router)
 
 const port = process.env.PORT || 8080
 module.exports = app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}, Ctrl+C to stop`)
 })
+
+
+
+function registerExtendRouter () {
+  router.get('/extend/get', function(req, res) {
+    res.json({
+      msg: 'hello world'
+    })
+  })
+
+  router.options('/extend/options', function(req, res) {
+    res.end()
+  })
+
+  router.delete('/extend/delete', function(req, res) {
+    res.end()
+  })
+
+  router.head('/extend/head', function(req, res) {
+    res.end()
+  })
+
+  router.post('/extend/post', function(req, res) {
+    res.json(req.body)
+  })
+
+  router.put('/extend/put', function(req, res) {
+    res.json(req.body)
+  })
+
+  router.patch('/extend/patch', function(req, res) {
+    res.json(req.body)
+  })
+
+  router.get('/extend/user', function(req, res) {
+    res.json({
+      code: 0,
+      message: 'ok',
+      result: {
+        name: 'jack',
+        age: 18
+      }
+    })
+  })
+}
