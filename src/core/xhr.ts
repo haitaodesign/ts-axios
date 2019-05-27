@@ -10,7 +10,6 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     if (responseType) {
       request.responseType = responseType
     }
-
     request.open(method.toUpperCase(), url!, true)
 
     request.onreadystatechange = function handleLoad() {
