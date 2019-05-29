@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-05-28 09:24:55
+ * @Last Modified time: 2019-05-29 09:54:24
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -61,6 +61,7 @@ router.post('/base/buffer', function (req, res) {
 
 registerExtendRouter()
 registerInterceptorRouter()
+registerConfigRouter()
 
 app.use(router)
 
@@ -120,3 +121,10 @@ function registerInterceptorRouter() {
   })
 }
 
+
+
+function registerConfigRouter() {
+  router.post('/config/post', function(req, res) {
+    res.json(req.body)
+  })
+}
