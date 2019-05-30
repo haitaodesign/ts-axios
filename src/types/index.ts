@@ -10,6 +10,8 @@ export interface AxiosRequestConfig {
 
   transformRequest?: AxiosTransformer | AxiosTransformer[]
   transformResponse?: AxiosTransformer | AxiosTransformer[]
+
+  cancelToken?: CancelToken
 }
 
 export interface AxiosTransformer {
@@ -96,4 +98,17 @@ export interface ResolvedFn<T> {
 
 export interface RejectedFn {
   (error: any): any
+}
+
+export interface CancelToken {
+  promise: Promise<string>
+  reason?: string
+}
+
+export interface Canceler {
+  (message?: string): void
+}
+
+export interface CancelExecutor {
+  (cancel: Canceler): void
 }
