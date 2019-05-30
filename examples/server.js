@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-05-29 09:54:24
+ * @Last Modified time: 2019-05-30 09:12:48
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -62,7 +62,7 @@ router.post('/base/buffer', function (req, res) {
 registerExtendRouter()
 registerInterceptorRouter()
 registerConfigRouter()
-
+registerCancelRouter()
 app.use(router)
 
 const port = process.env.PORT || 8080
@@ -126,5 +126,20 @@ function registerInterceptorRouter() {
 function registerConfigRouter() {
   router.post('/config/post', function(req, res) {
     res.json(req.body)
+  })
+}
+
+
+function registerCancelRouter() {
+  router.get('/cancel/get', function(req, res) {
+    setTimeout(() => {
+      res.json('hello')
+    }, 1000)
+  })
+
+  router.post('/cancel/post', function(req, res) {
+    setTimeout(() => {
+      res.json(req.body)
+    }, 1000)
   })
 }
