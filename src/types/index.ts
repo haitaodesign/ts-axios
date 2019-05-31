@@ -14,6 +14,9 @@ export interface AxiosRequestConfig {
   cancelToken?: CancelToken
 
   withCredentials?: boolean
+
+  xsrfCookieName?: string
+  xsrfHeaderName?: string
 }
 
 export interface AxiosTransformer {
