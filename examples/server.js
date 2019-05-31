@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-05-31 08:50:35
+ * @Last Modified time: 2019-05-31 09:29:26
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -31,6 +31,12 @@ app.use(express.static(__dirname))
 app.use(bodyParser.json())
 
 app.use(bodyParser.urlencoded({ extended: true}))
+
+app.use(express.static(__dirname, {
+  setHeaders (res) {
+    res.cookie('XSRF-TOKEN-D', '1234abc')
+  }
+}))
 
 const router = express.Router()
 
