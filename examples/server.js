@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-05-30 09:12:48
+ * @Last Modified time: 2019-05-31 08:50:35
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -10,6 +10,8 @@ const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
 const webpackConfig = require('./webpack.config')
+
+require('./server2')
 
 const app = express()
 const compiler = webpack(webpackConfig)
@@ -63,6 +65,8 @@ registerExtendRouter()
 registerInterceptorRouter()
 registerConfigRouter()
 registerCancelRouter()
+registerMoreRouter()
+
 app.use(router)
 
 const port = process.env.PORT || 8080
@@ -141,5 +145,11 @@ function registerCancelRouter() {
     setTimeout(() => {
       res.json(req.body)
     }, 1000)
+  })
+}
+
+function registerMoreRouter () {
+  router.get('/more/get', function(req, res) {
+    res.json(req.cookies)
   })
 }
