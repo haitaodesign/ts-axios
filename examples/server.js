@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-06-01 10:28:44
+ * @Last Modified time: 2019-06-01 10:51:18
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -12,6 +12,7 @@ const webpackHotMiddleware = require('webpack-hot-middleware')
 const webpackConfig = require('./webpack.config')
 const multipart = require('connect-multiparty')
 const path = require('path')
+const atob = require('atob')
 
 require('./server2')
 
@@ -57,7 +58,7 @@ registerMoreRouter()
 
 app.use(router)
 
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8081
 module.exports = app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}, Ctrl+C to stop`)
 })
@@ -143,6 +144,17 @@ function registerMoreRouter () {
   router.post('/more-upload/upload', function(req, res) {
     console.log(req.body, req.files)
     res.end('upload success!')
+  })
+  router.post('/more/post', function(req, res) {
+    const auth = req.headers.authorization
+    const [type, credentials] = auth.split(' ')
+    console.log(atob(credentials))
+    const [username, password] = atob(credentials).split(':')
+    if (type === 'Basic' && username === 'Yee' && password === '123456') {
+      res.json(req.body)
+    } else {
+      res.end('UnAuthorization')
+    }
   })
 }
 
