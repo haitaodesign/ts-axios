@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-06-01 10:51:18
+ * @Last Modified time: 2019-06-01 11:05:13
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -155,6 +155,10 @@ function registerMoreRouter () {
     } else {
       res.end('UnAuthorization')
     }
+  })
+  router.get('/more/304', function(req, res) {
+    res.status(304)
+    res.end()
   })
 }
 
