@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-06-01 11:43:57
+ * @Last Modified time: 2019-06-01 13:24:37
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -159,6 +159,13 @@ function registerMoreRouter () {
   router.get('/more/304', function(req, res) {
     res.status(304)
     res.end()
+  })
+  router.get('/more/A', function(req, res) {
+    res.end('A')
+  })
+
+  router.get('/more/B', function(req, res) {
+    res.end('B')
   })
 }
 
