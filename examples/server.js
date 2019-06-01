@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-05-31 09:29:26
+ * @Last Modified time: 2019-06-01 10:28:44
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -10,6 +10,8 @@ const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
 const webpackConfig = require('./webpack.config')
+const multipart = require('connect-multiparty')
+const path = require('path')
 
 require('./server2')
 
@@ -38,35 +40,15 @@ app.use(express.static(__dirname, {
   }
 }))
 
+app.use(multipart({
+  uploadDir: path.resolve(__dirname, 'upload-file')
+}))
+
 const router = express.Router()
 
-router.get('/simple/get', function(req, res) {
-  res.json({
-    msg: `hello world`
-  })
-})
 
-router.get('/base/get', function(req, res) {
-  res.json(req.query)
-})
 
-router.post('/base/post', function (req, res) {
-  res.json(req.body)
-})
-
-router.post('/base/buffer', function (req, res) {
-  let msg = []
-  req.on('data', (chunk) => {
-    if (chunk) {
-      msg.push(chunk)
-    }
-  })
-  req.on('end', () => {
-    let buf = Buffer.concat(msg)
-    res.json(buf.toJSON())
-  })
-})
-
+registerBaseRouter()
 registerExtendRouter()
 registerInterceptorRouter()
 registerConfigRouter()
@@ -157,5 +139,37 @@ function registerCancelRouter() {
 function registerMoreRouter () {
   router.get('/more/get', function(req, res) {
     res.json(req.cookies)
+  })
+  router.post('/more-upload/upload', function(req, res) {
+    console.log(req.body, req.files)
+    res.end('upload success!')
+  })
+}
+
+function registerBaseRouter () {
+  router.get('/simple/get', function(req, res) {
+    res.json({
+      msg: `hello world`
+    })
+  })
+  router.get('/base/get', function(req, res) {
+    res.json(req.query)
+  })
+
+  router.post('/base/post', function (req, res) {
+    res.json(req.body)
+  })
+
+  router.post('/base/buffer', function (req, res) {
+    let msg = []
+    req.on('data', (chunk) => {
+      if (chunk) {
+        msg.push(chunk)
+      }
+    })
+    req.on('end', () => {
+      let buf = Buffer.concat(msg)
+      res.json(buf.toJSON())
+    })
   })
 }
