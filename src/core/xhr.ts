@@ -1,71 +1,138 @@
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types'
 import { createError } from '../helpers/error'
+import { isURLSameOrigin } from '../helpers/url'
+import cookie from '../helpers/cookie'
+import { isFormData } from '../helpers/util'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    const { data = null, url, method = 'get', headers, responseType, timeout, cancelToken } = config
+    const {
+      data = null,
+      url,
+      method = 'get',
+      headers,
+      responseType,
+      timeout,
+      cancelToken,
+      withCredentials,
+      xsrfCookieName,
+      xsrfHeaderName,
+      onDownloadProgress,
+      onUploadProgress,
+      auth,
+      validateStatus
+    } = config
 
     const request = new XMLHttpRequest()
 
-    if (responseType) {
-      request.responseType = responseType
-    }
     request.open(method.toUpperCase(), url!, true)
 
-    request.onreadystatechange = function handleLoad() {
-      if (request.readyState !== 4) {
-        return
-      }
-
-      if (request.status === 1) {
-        return
-      }
-
-      const responseHeaders = request.getAllResponseHeaders()
-      const responseData =
-        responseType && responseType !== 'text' ? request.response : request.responseText
-      const response: AxiosResponse = {
-        data: responseData,
-        status: request.status,
-        statusText: request.statusText,
-        headers: responseHeaders,
-        config,
-        request
-      }
-      handleResponse(response)
+    if (auth) {
+      headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password)
     }
 
-    function handleResponse(response: AxiosResponse) {
-      if (response.status >= 200 && response.status < 300) {
-        resolve(response)
-      } else {
-        reject(new Error(`Request failed with status code ${response.status}`))
+    configureRequest()
+    addEvents()
+    processHeaders()
+    processCancel()
+
+    request.send(data)
+
+    function configureRequest() {
+      if (responseType) {
+        request.responseType = responseType
+      }
+      if (withCredentials) {
+        request.withCredentials = withCredentials
+      }
+      if (timeout) {
+        request.timeout = timeout
       }
     }
 
-    request.onerror = function handleError() {
-      reject(createError('Network Error!', config, null, request))
-    }
+    function addEvents(): void {
+      request.onreadystatechange = function handleLoad() {
+        if (request.readyState !== 4) {
+          return
+        }
 
-    request.ontimeout = function handleTimeout() {
-      reject(createError(`Timeout of ${timeout} ms exceeded`, config, 'ECONNABORTED', request))
-    }
+        if (request.status === 1) {
+          return
+        }
 
-    Object.keys(headers).forEach(name => {
-      if (data === null && name.toLowerCase() === 'content-type') {
-        delete headers[name]
-      } else {
-        request.setRequestHeader(name, headers[name])
+        const responseHeaders = request.getAllResponseHeaders()
+        const responseData =
+          responseType && responseType !== 'text' ? request.response : request.responseText
+        const response: AxiosResponse = {
+          data: responseData,
+          status: request.status,
+          statusText: request.statusText,
+          headers: responseHeaders,
+          config,
+          request
+        }
+        handleResponse(response)
       }
-    })
 
-    if (cancelToken) {
-      cancelToken.promise.then(reason => {
-        request.abort()
-        reject(reason)
+      request.onerror = function handleError() {
+        reject(createError('Network Error!', config, null, request))
+      }
+
+      request.ontimeout = function handleTimeout() {
+        reject(createError(`Timeout of ${timeout} ms exceeded`, config, 'ECONNABORTED', request))
+      }
+
+      if (onDownloadProgress) {
+        request.onprogress = onDownloadProgress
+      }
+      if (onUploadProgress) {
+        request.onprogress = onUploadProgress
+      }
+    }
+
+    function processHeaders(): void {
+      if (isFormData(data)) {
+        delete headers['Content-Type']
+      }
+      if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
+        const xsrfValue = cookie.read(xsrfCookieName)
+        if (xsrfValue) {
+          headers[xsrfHeaderName!] = xsrfCookieName
+        }
+        request.withCredentials = true
+      }
+      Object.keys(headers).forEach(name => {
+        if (data === null && name.toLowerCase() === 'content-type') {
+          delete headers[name]
+        } else {
+          request.setRequestHeader(name, headers[name])
+        }
       })
     }
 
-    request.send(data)
+    function processCancel(): void {
+      if (cancelToken) {
+        cancelToken.promise.then(reason => {
+          request.abort()
+          reject(reason)
+        })
+      }
+    }
+
+    function handleResponse(response: AxiosResponse) {
+      if (!validateStatus || validateStatus(response.status)) {
+        resolve(response)
+      } else {
+        reject(
+          createError(
+            `Request failed with status code ${response.status}`,
+            config,
+            null,
+            request,
+            response
+          )
+        )
+      }
+    }
   })
 }
