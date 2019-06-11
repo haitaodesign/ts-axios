@@ -2,7 +2,7 @@
  * @Author: lihaitao
  * @Date: 2019-05-23 22:46:50
  * @Last Modified by: lihaitao
- * @Last Modified time: 2019-05-30 09:12:48
+ * @Last Modified time: 2019-06-01 13:24:37
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -10,6 +10,11 @@ const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
 const webpackConfig = require('./webpack.config')
+const multipart = require('connect-multiparty')
+const path = require('path')
+const atob = require('atob')
+
+require('./server2')
 
 const app = express()
 const compiler = webpack(webpackConfig)
@@ -30,42 +35,30 @@ app.use(bodyParser.json())
 
 app.use(bodyParser.urlencoded({ extended: true}))
 
+app.use(express.static(__dirname, {
+  setHeaders (res) {
+    res.cookie('XSRF-TOKEN-D', '1234abc')
+  }
+}))
+
+app.use(multipart({
+  uploadDir: path.resolve(__dirname, 'upload-file')
+}))
+
 const router = express.Router()
 
-router.get('/simple/get', function(req, res) {
-  res.json({
-    msg: `hello world`
-  })
-})
 
-router.get('/base/get', function(req, res) {
-  res.json(req.query)
-})
 
-router.post('/base/post', function (req, res) {
-  res.json(req.body)
-})
-
-router.post('/base/buffer', function (req, res) {
-  let msg = []
-  req.on('data', (chunk) => {
-    if (chunk) {
-      msg.push(chunk)
-    }
-  })
-  req.on('end', () => {
-    let buf = Buffer.concat(msg)
-    res.json(buf.toJSON())
-  })
-})
-
+registerBaseRouter()
 registerExtendRouter()
 registerInterceptorRouter()
 registerConfigRouter()
 registerCancelRouter()
+registerMoreRouter()
+
 app.use(router)
 
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8081
 module.exports = app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}, Ctrl+C to stop`)
 })
@@ -141,5 +134,65 @@ function registerCancelRouter() {
     setTimeout(() => {
       res.json(req.body)
     }, 1000)
+  })
+}
+
+function registerMoreRouter () {
+  router.get('/more/get', function(req, res) {
+    res.json(req.cookies)
+  })
+  router.post('/more-upload/upload', function(req, res) {
+    console.log(req.body, req.files)
+    res.end('upload success!')
+  })
+  router.post('/more/post', function(req, res) {
+    const auth = req.headers.authorization
+    const [type, credentials] = auth.split(' ')
+    console.log(atob(credentials))
+    const [username, password] = atob(credentials).split(':')
+    if (type === 'Basic' && username === 'Yee' && password === '123456') {
+      res.json(req.body)
+    } else {
+      res.end('UnAuthorization')
+    }
+  })
+  router.get('/more/304', function(req, res) {
+    res.status(304)
+    res.end()
+  })
+  router.get('/more/A', function(req, res) {
+    res.end('A')
+  })
+
+  router.get('/more/B', function(req, res) {
+    res.end('B')
+  })
+}
+
+function registerBaseRouter () {
+  router.get('/simple/get', function(req, res) {
+    res.json({
+      msg: `hello world`
+    })
+  })
+  router.get('/base/get', function(req, res) {
+    res.json(req.query)
+  })
+
+  router.post('/base/post', function (req, res) {
+    res.json(req.body)
+  })
+
+  router.post('/base/buffer', function (req, res) {
+    let msg = []
+    req.on('data', (chunk) => {
+      if (chunk) {
+        msg.push(chunk)
+      }
+    })
+    req.on('end', () => {
+      let buf = Buffer.concat(msg)
+      res.json(buf.toJSON())
+    })
   })
 }
