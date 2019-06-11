@@ -9,7 +9,6 @@ describe('helpers:data', () => {
 
     test('should do nothing if data is not a PlainObject ', () => {
       const a = new URLSearchParams('a=b')
-      console.log(a)
       expect(transformRequest(a)).toBe(a)
     })
   })
