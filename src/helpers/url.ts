@@ -74,18 +74,16 @@ export function buildURL(
         }
         parts.push(`${encode(key)}=${encode(val)}`)
       })
-
-      serializedParams = parts.join('&')
-
-      if (serializedParams) {
-        const markeIndex = url.indexOf('#')
-        if (markeIndex !== -1) {
-          url = url.slice(0, markeIndex)
-        }
-
-        url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams
-      }
     })
+    serializedParams = parts.join('&')
+  }
+  if (serializedParams) {
+    const markeIndex = url.indexOf('#')
+    if (markeIndex !== -1) {
+      url = url.slice(0, markeIndex)
+    }
+
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams
   }
   return url
 }
