@@ -72,6 +72,9 @@
     "collectCoverageFrom": [
       "src/*.{js,ts}",
       "src/**/*.{js,ts}"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/test/boot.ts"
     ]
   },
   "prettier": {
@@ -125,6 +128,9 @@
     "typescript": "^3.5.1",
     "webpack": "^4.28.4",
     "webpack-dev-middleware": "^3.5.0",
-    "webpack-hot-middleware": "^2.24.3"
+    "webpack-hot-middleware": "^2.24.3",
+    "@types/jasmine-ajax": "^3.1.40",
+    "jasmine-ajax": "^4.0.0",
+    "jasmine-core": "^3.4.0"
   }
 }
