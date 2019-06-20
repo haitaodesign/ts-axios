@@ -10,7 +10,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     const {
       data = null,
       url,
-      method = 'get',
+      method,
       headers = {},
       responseType,
       timeout,
@@ -26,7 +26,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     const request = new XMLHttpRequest()
 
-    request.open(method.toUpperCase(), url!, true)
+    request.open(method!.toUpperCase(), url!, true)
 
     if (auth) {
       headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password)
@@ -57,7 +57,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
           return
         }
 
-        if (request.status === 1) {
+        if (request.status === 0) {
           return
         }
 
@@ -76,7 +76,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       }
 
       request.onerror = function handleError() {
-        reject(createError('Network Error!', config, null, request))
+        reject(createError('Network Error', config, null, request))
       }
 
       request.ontimeout = function handleTimeout() {
