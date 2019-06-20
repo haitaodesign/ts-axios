@@ -34,35 +34,35 @@ describe('requests', () => {
     })
   })
 
-  // test('should reject on network errors', done => {
-  //   const resolveSpy = jest.fn((res: AxiosResponse) => {
-  //     return res
-  //   })
+  test('should reject on network errors', done => {
+    const resolveSpy = jest.fn((res: AxiosResponse) => {
+      return res
+    })
 
-  //   const rejectSpy = jest.fn((e: AxiosError) => {
-  //     return e
-  //   })
+    const rejectSpy = jest.fn((e: AxiosError) => {
+      return e
+    })
 
-  //   jasmine.Ajax.uninstall()
+    jasmine.Ajax.uninstall()
 
-  //   return axios('/foo')
-  //     .then(resolveSpy)
-  //     .catch(rejectSpy)
-  //     .then(next)
+    return axios('/foo')
+      .then(resolveSpy)
+      .catch(rejectSpy)
+      .then(next)
 
-  //   function next(reason: AxiosResponse | AxiosError) {
-  //     expect(resolveSpy).not.toHaveBeenCalled()
-  //     expect(rejectSpy).toHaveBeenCalled()
-  //     expect(reason instanceof Error).toBeTruthy()
-  //     // expect((reason as AxiosError).message).toBe('Network Error')
-  //     // 这里不知道是什么原因导致的错误，需要进一步排查，返回的不是网络错误，而是请求失败
-  //     expect((reason as AxiosError).message).toBe('Request failed with status code 0')
-  //     expect(reason.request).toEqual(expect.any(XMLHttpRequest))
+    function next(reason: AxiosResponse | AxiosError) {
+      expect(resolveSpy).not.toHaveBeenCalled()
+      expect(rejectSpy).toHaveBeenCalled()
+      expect(reason instanceof Error).toBeTruthy()
+      // expect((reason as AxiosError).message).toBe('Network Error')
+      // 这里不知道是什么原因导致的错误，需要进一步排查，返回的不是网络错误，而是请求失败
+      expect((reason as AxiosError).message).toBe('Network Error')
+      expect(reason.request).toEqual(expect.any(XMLHttpRequest))
 
-  //     jasmine.Ajax.install()
-  //     done()
-  //   }
-  // })
+      jasmine.Ajax.install()
+      done()
+    }
+  })
 
   test('should reject when request timeout', done => {
     let err: AxiosError
@@ -262,6 +262,38 @@ describe('requests', () => {
 
     return getAjaxRequest().then(request => {
       expect(request.requestHeaders['Content-Type']).toBe('application/json')
+    })
+  })
+
+  test('should support array buffer response', done => {
+    let response: AxiosResponse
+
+    function str2ab(str: string) {
+      const buff = new ArrayBuffer(str.length * 2)
+      const view = new Uint16Array(buff)
+      for (let i = 0; i < str.length; i++) {
+        view[i] = str.charCodeAt(i)
+      }
+      return buff
+    }
+
+    axios('/foo', {
+      responseType: 'arraybuffer'
+    }).then(data => {
+      response = data
+    })
+
+    getAjaxRequest().then(request => {
+      request.respondWith({
+        status: 200,
+        // @ts-ignore
+        response: str2ab('Hello world')
+      })
+
+      setTimeout(() => {
+        expect(response.data.byteLength).toBe(22)
+        done()
+      }, 100)
     })
   })
 })
