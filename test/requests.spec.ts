@@ -54,7 +54,7 @@ describe('requests', () => {
       expect(resolveSpy).not.toHaveBeenCalled()
       expect(rejectSpy).toHaveBeenCalled()
       expect(reason instanceof Error).toBeTruthy()
-      // expect((reason as AxiosError).message).toBe('Network Error')
+      expect((reason as AxiosError).message).toBe('Network Error')
       // 这里不知道是什么原因导致的错误，需要进一步排查，返回的不是网络错误，而是请求失败
       expect((reason as AxiosError).message).toBe('Network Error')
       expect(reason.request).toEqual(expect.any(XMLHttpRequest))
