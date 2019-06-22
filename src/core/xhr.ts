@@ -3,14 +3,15 @@ import { createError } from '../helpers/error'
 import { isURLSameOrigin } from '../helpers/url'
 import cookie from '../helpers/cookie'
 import { isFormData } from '../helpers/util'
+import { parseHeaders } from '../helpers/headers'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
     const {
       data = null,
       url,
-      method = 'get',
-      headers,
+      method,
+      headers = {},
       responseType,
       timeout,
       cancelToken,
@@ -25,7 +26,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     const request = new XMLHttpRequest()
 
-    request.open(method.toUpperCase(), url!, true)
+    request.open(method!.toUpperCase(), url!, true)
 
     if (auth) {
       headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password)
@@ -56,11 +57,11 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
           return
         }
 
-        if (request.status === 1) {
+        if (request.status === 0) {
           return
         }
 
-        const responseHeaders = request.getAllResponseHeaders()
+        const responseHeaders = parseHeaders(request.getAllResponseHeaders())
         const responseData =
           responseType && responseType !== 'text' ? request.response : request.responseText
         const response: AxiosResponse = {
@@ -75,7 +76,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       }
 
       request.onerror = function handleError() {
-        reject(createError('Network Error!', config, null, request))
+        reject(createError('Network Error', config, null, request))
       }
 
       request.ontimeout = function handleTimeout() {
@@ -97,7 +98,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
         const xsrfValue = cookie.read(xsrfCookieName)
         if (xsrfValue) {
-          headers[xsrfHeaderName!] = xsrfCookieName
+          headers[xsrfHeaderName!] = xsrfValue
         }
         request.withCredentials = true
       }
