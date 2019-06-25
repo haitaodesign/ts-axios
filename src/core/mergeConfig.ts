@@ -3,7 +3,7 @@ import { isPlainObject, deepMerge } from '../helpers/util'
 
 const strats = Object.create(null)
 
-function defaultStrat(val1: string, val2: string) {
+function defaultStrat(val1: any, val2: any) {
   return typeof val2 !== 'undefined' ? val2 : val1
 }
 
@@ -19,7 +19,7 @@ stratKeyFromVal2.forEach(key => {
   strats[key] = fromVal2Strat
 })
 
-function deepMergeStrat(val1: string, val2: string) {
+function deepMergeStrat(val1: any, val2: any): any {
   if (isPlainObject(val2)) {
     return deepMerge(val1, val2)
   } else if (typeof val2 !== 'undefined') {
